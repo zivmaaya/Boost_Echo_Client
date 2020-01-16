@@ -20,7 +20,7 @@ void bookClubClient::addBook(std::string bookName, std::string genre, bool sendF
         std::vector<std::string> stompFrame;
         stompFrame.push_back("SEND");
         stompFrame.push_back("destination:" + genre);
-        stompFrame.push_back("\n");
+        stompFrame.push_back("");
         stompFrame.push_back(this->clientName+" has added the book " + bookName);
         connectionHandler->sendStompFrame(stompFrame);
     }
@@ -31,8 +31,8 @@ void bookClubClient::subscribe(std::string genre) {
     std::vector<std::string> stompFrame;
     stompFrame.push_back("SUBSCRIBE");
     stompFrame.push_back("destination:"+genre);
-    stompFrame.push_back("id:"+subscribeCounter);
-    stompFrame.push_back("receipt:"+receipt);
+    stompFrame.push_back("id:"+std::to_string(subscribeCounter));
+    stompFrame.push_back("receipt:"+std::to_string(receipt));
     stompFrame.push_back("\n");
     receiptTopic.insert({std::to_string(receipt),genre});
     subscribeCounter++;
@@ -45,8 +45,8 @@ void bookClubClient::unsubscribe(std::string genre) {
     stompFrame.push_back("UNSUBSCRIBE");
     stompFrame.push_back("destination:"+genre);
     int id = subscribeId.find(genre)->second;
-    stompFrame.push_back("id:"+id);
-    stompFrame.push_back("receipt:"+receipt);
+    stompFrame.push_back("id:"+std::to_string(id));
+    stompFrame.push_back("receipt:"+std::to_string(receipt));
     stompFrame.push_back("\n");
     connectionHandler->sendStompFrame(stompFrame);
     subscribeId.erase(genre);
@@ -59,7 +59,7 @@ void bookClubClient::borrowBook(std::string bookName, std::string genre) {
     std::vector<std::string> stompFrame;
     stompFrame.push_back("SEND");
     stompFrame.push_back("destination:"+genre);
-    stompFrame.push_back("\n");
+    stompFrame.push_back("");
     stompFrame.push_back(clientName+" wish to borrow " + bookName);
     connectionHandler->sendStompFrame(stompFrame);
 }
@@ -73,7 +73,7 @@ void bookClubClient::borrowingBookFrom(std::string lender, std::string genre, st
         std::vector<std::string> stompFrame;
         stompFrame.push_back("SEND");
         stompFrame.push_back("destination:"+genre);
-        stompFrame.push_back("\n");
+        stompFrame.push_back("");
         stompFrame.push_back("Taking " + bookName + " from " + lender);
         connectionHandler->sendStompFrame(stompFrame);
     }
@@ -88,7 +88,7 @@ void bookClubClient::returnBookIBorrowed(std::string bookName, std::string genre
         std::string lender = booksIBorrowed.find(bookName)->second;
         stompFrame.push_back("SEND");
         stompFrame.push_back("destination:" + genre);
-        stompFrame.push_back("\n");
+        stompFrame.push_back("");
         stompFrame.push_back("Returning " + bookName + " to " + lender);
         connectionHandler->sendStompFrame(stompFrame);
         booksIBorrowed.erase(bookName);
@@ -109,7 +109,7 @@ void bookClubClient::sendStatus(std::string genre) {
         }
         i++;
     }
-    stompFrame.push_back("\n");
+    stompFrame.push_back("");
     stompFrame.push_back(myBooksList);
     connectionHandler->sendStompFrame(stompFrame);
 }
@@ -162,7 +162,7 @@ void bookClubClient::isBookAvailable(std::string bookName, std::string genre) {
         std::vector<std::string> stompFrame;
         stompFrame.push_back("SEND");
         stompFrame.push_back("destination:" + genre);
-        stompFrame.push_back("\n");
+        stompFrame.push_back("");
         stompFrame.push_back(clientName+" has " + bookName);
         connectionHandler->sendStompFrame(stompFrame);
     }
@@ -172,7 +172,7 @@ void bookClubClient::getStatus(std::string genre) {
     std::vector<std::string> stompFrame;
     stompFrame.push_back("SEND");
     stompFrame.push_back("destination:" + genre);
-    stompFrame.push_back("\n");
+    stompFrame.push_back("");
     stompFrame.push_back("book status");
     connectionHandler->sendStompFrame(stompFrame);
 }

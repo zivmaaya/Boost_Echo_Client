@@ -39,13 +39,21 @@ std::vector<std::string> ConnectionHandler::getStompframe() {
     do{
         getLine(newLine);
         stopmFrame.push_back(newLine);
-    }while (newLine != "^@");
-    stopmFrame.push_back("^@");
+        newLine="";
+    }while (stopmFrame.at(stopmFrame.size()-1)!="^@");
+    for(std::string s :stopmFrame){
+        std::cout<<s<<std::endl;
+    }
+    std::cout<<std::endl;
     return stopmFrame;
 }
 
 void ConnectionHandler::sendStompFrame(std::vector<std::string> userInput){
     userInput.push_back("^@");
+    for(std::string s :userInput){
+        std::cout<<s<<std::endl;
+    }
+    std::cout<<std::endl;
     for(string s :userInput){
         sendLine(s);
     }
@@ -95,17 +103,33 @@ bool ConnectionHandler::sendLine(std::string& line) {
 
 bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
     char ch;
+    bool isTick = false;
+    bool endOfFrame = false;
     // Stop when we encounter the null character.
     // Notice that the null character is not appended to the frame string.
     try {
-	do{
-		if(!getBytes(&ch, 1))
-		{
+        while (delimiter != ch && !endOfFrame){
+            if(!getBytes(&ch, 1))
+		    {
 			return false;
-		}
-		if(ch!='\0')  
+		    }
+		if(ch != delimiter)
 			frame.append(1, ch);
-	}while (delimiter != ch);
+            if(isTick && ch == '@'){
+                endOfFrame = true;
+            }
+            else {isTick = (ch == '^');}
+
+
+        }
+//	do{
+//		if(!getBytes(&ch, 1))
+//		{
+//			return false;
+//		}
+//		if(ch!='\0')
+//			frame.append(1, ch);
+//	}while (delimiter != ch);
     } catch (std::exception& e) {
 	std::cerr << "recv failed2 (Error: " << e.what() << ')' << std::endl;
 	return false;

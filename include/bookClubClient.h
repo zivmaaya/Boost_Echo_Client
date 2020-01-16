@@ -10,22 +10,9 @@
 #include "../include/connectionHandler.h"
 
 class bookClubClient {
-private:
-    std::map<std::string, std::vector<std::string>> myBooks;
-    std::map<std::string, std::string> booksIBorrowed;
-    std::vector<std::string> booksILent;
-    std::map<std::string,int > subscribeId;
-    std::vector<std::string> waitingList;
-    int subscribeCounter = 0;
-    int receipt = 0;
-    std::string clientName;
-    std::string clientPassword;
-    ConnectionHandler *connectionHandler;
-    std::map<std::string,std::string> receiptTopic];
 
 public:
     bookClubClient(ConnectionHandler &connectionHandler_);
-    ~bookClubClient();
     void addBook(std::string bookName, std::string genre, bool sendFrame);
     void subscribe(std::string genre);
     void unsubscribe(std::string genre);
@@ -41,6 +28,19 @@ public:
     void getStatus(std::string genre);
     std::string getName();
     std::string getReceiptMessage(std::string receipt);
+
+private:
+    std::map<std::string, std::vector<std::string>> myBooks;
+    std::map<std::string, std::string> booksIBorrowed;
+    std::vector<std::string> booksILent;
+    std::map<std::string,int > subscribeId;
+    std::vector<std::string> waitingList;
+    int subscribeCounter = 0;
+    int receipt = 0;
+    std::string clientName;
+    std::string clientPassword;
+    ConnectionHandler *connectionHandler;
+    std::map<std::string,std::string> receiptTopic;
 
 
 };
