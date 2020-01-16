@@ -103,7 +103,7 @@ void msgReceivedProcess(bookClubClient *clientHandler, ConnectionHandler *connec
             else if(body.at(0) == "Returning" && body.at(3)==clientHandler->getName()){
                 clientHandler->acceptBookILent(body.at(1),genre);
             }
-            else if(body.at(0) == "Book"){
+            else if(body.at(0) == "Book" || body.at(0) == "book"){
                 clientHandler->sendStatus(genre);
             }
         }
@@ -143,6 +143,7 @@ std::vector<std::string> bodyString (std::string body){
             temp+=ch;
         }
     }
+    splitBody.push_back(temp);
     return splitBody;
 }
 
