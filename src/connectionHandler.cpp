@@ -41,23 +41,22 @@ std::vector<std::string> ConnectionHandler::getStompframe() {
         stopmFrame.push_back(newLine);
         newLine="";
     }while (stopmFrame.at(stopmFrame.size()-1)!="^@");
-    for(std::string s :stopmFrame){
-        std::cout<<s<<std::endl;
-    }
+//    for(std::string s :stopmFrame){
+//        std::cout<<s<<std::endl;
+//    }
     std::cout<<std::endl;
     return stopmFrame;
 }
 
 void ConnectionHandler::sendStompFrame(std::vector<std::string> userInput){
     userInput.push_back("^@");
-    for(std::string s :userInput){
-        std::cout<<s<<std::endl;
-    }
-    std::cout<<std::endl;
+//    for(std::string s :userInput){
+//        std::cout<<s<<std::endl;
+//    }
+//    std::cout<<std::endl;
     for(string s :userInput){
         sendLine(s);
     }
-    std::vector<std::string> stompFrame;
 }
 
 bool ConnectionHandler::getBytes(char bytes[], unsigned int bytesToRead) {
@@ -122,14 +121,6 @@ bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
 
 
         }
-//	do{
-//		if(!getBytes(&ch, 1))
-//		{
-//			return false;
-//		}
-//		if(ch!='\0')
-//			frame.append(1, ch);
-//	}while (delimiter != ch);
     } catch (std::exception& e) {
 	std::cerr << "recv failed2 (Error: " << e.what() << ')' << std::endl;
 	return false;
@@ -148,7 +139,8 @@ bool ConnectionHandler::sendFrameAscii(const std::string& frame, char delimiter)
 void ConnectionHandler::close() {
     try{
         socket_.close();
-        connected = false;
+        connected=false;
     } catch (...) {
         std::cout << "closing failed: connection al";
-    }}
+    }
+}

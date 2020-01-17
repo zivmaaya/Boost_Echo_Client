@@ -20,7 +20,7 @@ public:
     void returnBookIBorrowed(std::string bookName, std::string genre);
     void lendBook(std::string bookName, std::string genre);
     void sendStatus(std::string genre);
-    void logIn (std::string userName, std::string password);
+    void logIn (std::string host, std::string userName, std::string password);
     void borrowingBookFrom(std::string lender, std::string genre, std::string bookName);
     void logOut();
     void acceptBookILent(std::string bookName, std::string genre);

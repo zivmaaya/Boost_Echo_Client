@@ -3,7 +3,6 @@
 //
 
 #include "../include/bookClubClient.h"
-#include "../include/connectionHandler.h"
 #include <vector>
 
 bookClubClient::bookClubClient(ConnectionHandler &connectionHandler_) : connectionHandler(&connectionHandler_) {}
@@ -34,24 +33,28 @@ void bookClubClient::subscribe(std::string genre) {
     stompFrame.push_back("id:"+std::to_string(subscribeCounter));
     stompFrame.push_back("receipt:"+std::to_string(receipt));
     stompFrame.push_back("\n");
+    connectionHandler->sendStompFrame(stompFrame);
     receiptTopic.insert({std::to_string(receipt),genre});
     subscribeCounter++;
     receipt++;
-    connectionHandler->sendStompFrame(stompFrame);
 }
 
 void bookClubClient::unsubscribe(std::string genre) {
     std::vector<std::string> stompFrame;
-    stompFrame.push_back("UNSUBSCRIBE");
-    stompFrame.push_back("destination:"+genre);
-    int id = subscribeId.find(genre)->second;
-    stompFrame.push_back("id:"+std::to_string(id));
-    stompFrame.push_back("receipt:"+std::to_string(receipt));
-    stompFrame.push_back("\n");
-    connectionHandler->sendStompFrame(stompFrame);
-    subscribeId.erase(genre);
-    receiptTopic.insert({std::to_string(receipt),genre});
-    receipt++;
+    if (subscribeId.find(genre) != subscribeId.end()) {
+        stompFrame.push_back("UNSUBSCRIBE");
+        stompFrame.push_back("destination:" + genre);
+        int id = subscribeId.find(genre)->second;
+        stompFrame.push_back("id:" + std::to_string(id));
+        stompFrame.push_back("receipt:" + std::to_string(receipt));
+        stompFrame.push_back("\n");
+        connectionHandler->sendStompFrame(stompFrame);
+        subscribeId.erase(genre);
+        receiptTopic.insert({std::to_string(receipt), genre});
+        receipt++;
+    } else {
+        std::cout<<"You are not subscribed to topic "<<genre<<std::endl;
+    }
 }
 
 void bookClubClient::borrowBook(std::string bookName, std::string genre) {
@@ -66,25 +69,25 @@ void bookClubClient::borrowBook(std::string bookName, std::string genre) {
 
 void bookClubClient::borrowingBookFrom(std::string lender, std::string genre, std::string bookName) {
     auto index = std::find(waitingList.begin(),waitingList.end(),bookName);
+    std::vector<std::string> stompFrame;
     if (index != waitingList.end()){
         addBook(bookName,genre, false);
         booksIBorrowed.insert({bookName,lender});
         waitingList.erase(index);
-        std::vector<std::string> stompFrame;
         stompFrame.push_back("SEND");
         stompFrame.push_back("destination:"+genre);
         stompFrame.push_back("");
         stompFrame.push_back("Taking " + bookName + " from " + lender);
         connectionHandler->sendStompFrame(stompFrame);
     }
-
 }
+
 void bookClubClient::returnBookIBorrowed(std::string bookName, std::string genre) {
     std::vector<std::string> v = myBooks.find(genre)->second;
     auto index = std::find(v.begin(),v.end(),bookName);
+    std::vector<std::string> stompFrame;
     if(index != v.end()) {
         myBooks.find(genre)->second.erase(index);
-        std::vector<std::string> stompFrame;
         std::string lender = booksIBorrowed.find(bookName)->second;
         stompFrame.push_back("SEND");
         stompFrame.push_back("destination:" + genre);
@@ -114,28 +117,28 @@ void bookClubClient::sendStatus(std::string genre) {
     connectionHandler->sendStompFrame(stompFrame);
 }
 
-void bookClubClient::logIn(std::string userName, std::string password) {
+
+void bookClubClient::logIn(std::string host, std::string userName, std::string password) {
     clientName = userName;
     clientPassword = password;
     std::vector<std::string> stompFrame;
     stompFrame.push_back("CONNECT");
     stompFrame.push_back("accept-version:1.2");
-    stompFrame.push_back("host:stomp.cs.bgu.ac.il");//TODO: host should be server machine address
+    stompFrame.push_back("host:"+host);
     stompFrame.push_back("login:"+userName);
     stompFrame.push_back("passcode:"+password);
-    stompFrame.push_back("\n");
+    stompFrame.push_back("");
     connectionHandler->sendStompFrame(stompFrame);
 }
 
 void bookClubClient::logOut() {
     std::vector<std::string> stompFrame;
     stompFrame.push_back("DISCONNECT");
-    stompFrame.push_back("receipt:"+receipt);
+    stompFrame.push_back("receipt:"+std::to_string(receipt));
     stompFrame.push_back("\n");
     receiptTopic.insert({std::to_string(receipt),"disconnect"});
-    receipt++;
     connectionHandler->sendStompFrame(stompFrame);
-    //connectionHandler->close();//TODO: wait for receipt
+    receipt++;
 }
 
 void bookClubClient::acceptBookILent(std::string bookName, std::string genre) {
@@ -158,8 +161,8 @@ void bookClubClient::lendBook(std::string bookName, std::string genre) {
 void bookClubClient::isBookAvailable(std::string bookName, std::string genre) {
     std::vector<std::string> v = myBooks.find(genre)->second;
     auto it = std::find(v.begin(),v.end(),bookName);
+    std::vector<std::string> stompFrame;
     if(it != v.end()) {
-        std::vector<std::string> stompFrame;
         stompFrame.push_back("SEND");
         stompFrame.push_back("destination:" + genre);
         stompFrame.push_back("");
@@ -182,7 +185,7 @@ std::string bookClubClient::getName() {
 }
 
 std::string bookClubClient::getReceiptMessage(std::string receipt) {
-    std::string topic = receiptTopic.find(receipt)->second;//TODO: think if need to delete receipt after
+    std::string topic = receiptTopic.find(receipt)->second;
     if (topic == "disconnect"){
         return topic;
     }
