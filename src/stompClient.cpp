@@ -13,6 +13,7 @@ void userInputProcess(std::vector<std::string>, bookClubClient *clientHandler);
 std::vector<std::string> getUserInput();
 void msgReceivedProcess(bookClubClient *clientHandler, ConnectionHandler *connectionHandler, std::vector<std::string> frame);
 std::vector<std::string> bodyString (std::string body);
+std::string getBookName(std::vector<std::string> bookVector,  int fIndex, int lIndex);
 
 ///----------------------------------------------------------------------------------------
 
@@ -124,13 +125,13 @@ void userInputProcess(std::vector<std::string> userInput,bookClubClient *clientH
         clientHandler->unsubscribe(userInput.at(1));
     }
     else if(userInput.at(0)=="add"){
-        clientHandler->addBook(userInput.at(2),userInput.at(1),true);
+        clientHandler->addBook(getBookName(userInput,2,userInput.size()),userInput.at(1),true);
     }
     else if(userInput.at(0)=="borrow"){
-        clientHandler->borrowBook(userInput.at(2),userInput.at(1));
+        clientHandler->borrowBook(getBookName(userInput,2,userInput.size()),userInput.at(1));
     }
     else if (userInput.at(0)=="return"){
-        clientHandler->returnBookIBorrowed(userInput.at(2),userInput.at(1));
+        clientHandler->returnBookIBorrowed(getBookName(userInput,2,userInput.size()),userInput.at(1));
     }
     else if (userInput.at(0)=="status"){
         clientHandler->getStatus(userInput.at(1));
@@ -157,13 +158,13 @@ void msgReceivedProcess(bookClubClient *clientHandler, ConnectionHandler *connec
             std::vector<std::string> body = bodyString(stompMessage.at(5));
             if (body.size() > 1) {
                 if (body.at(1) == "wish") {
-                    clientHandler->isBookAvailable(body.at(4), genre);
+                    clientHandler->isBookAvailable(getBookName(body,4,body.size()), genre);
                 } else if (body.at(0) == "Taking" && body.at(3) == clientHandler->getName()) {
-                    clientHandler->lendBook(body.at(1), genre);
+                    clientHandler->lendBook(getBookName(body,1,body.size()-2), genre);
                 } else if (body.at(1) == "has" && body.size() == 3) {
-                    clientHandler->borrowingBookFrom(body.at(0), genre, body.at(2));
+                    clientHandler->borrowingBookFrom(body.at(0), genre, getBookName(body,2,body.size()));
                 } else if (body.at(0) == "Returning" && body.at(3) == clientHandler->getName()) {
-                    clientHandler->acceptBookILent(body.at(1), genre);
+                    clientHandler->acceptBookILent(getBookName(body,1,body.size()-2), genre);
                 } else if (body.at(0) == "Book" || body.at(0) == "book") {
                     clientHandler->sendStatus(genre);
                 }
@@ -211,3 +212,10 @@ std::vector<std::string> bodyString (std::string body){
     return splitBody;
 }
 
+std::string getBookName(std::vector<std::string> bookVector, int fIndex, int lIndex){
+    std::string bookName;
+    for (int i = fIndex; i < lIndex ; i++){
+        bookName += bookVector.at(i)+ " ";
+    }
+    return bookName.substr(0,bookName.size()-1);
+}
