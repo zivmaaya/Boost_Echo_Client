@@ -1,10 +1,10 @@
 CFLAGS:=-c -Wall -Weffc++ -g -std=c++11 -Iinclude
 LDFLAGS:=-lboost_system -pthread
 
-all: EchoClient
-	g++ -o bin/stomp bin/connectionHandler.o bin/bookClubClient.o bin/stompClient.o $(LDFLAGS)
+all: Target
+	g++ -o bin/StompBookClubClient bin/connectionHandler.o bin/bookClubClient.o bin/stompClient.o $(LDFLAGS)
 
-EchoClient: bin/bookClubClient.o bin/stompClient.o bin/connectionHandler.o
+Target: bin/bookClubClient.o bin/stompClient.o bin/connectionHandler.o
 
 bin/connectionHandler.o: src/connectionHandler.cpp
 	g++ $(CFLAGS) -o bin/connectionHandler.o src/connectionHandler.cpp
