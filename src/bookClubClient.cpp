@@ -7,6 +7,10 @@
 
 bookClubClient::bookClubClient(ConnectionHandler &connectionHandler_) : connectionHandler(&connectionHandler_) {}
 
+bookClubClient::bookClubClient(const bookClubClient &aBookClubClient) {
+    this->connectionHandler = aBookClubClient.getConnectionHandler();
+}
+
 void bookClubClient::addBook(std::string bookName, std::string genre, bool sendFrame) {
     if(myBooks.find(genre) != myBooks.end()){
         myBooks.find(genre)->second.push_back(bookName);
@@ -195,6 +199,10 @@ std::string bookClubClient::getReceiptMessage(std::string receipt) {
     else {
         return ("Exited club "+topic);
     }
+}
+
+ConnectionHandler *bookClubClient::getConnectionHandler()const {
+    return this->connectionHandler;
 }
 
 

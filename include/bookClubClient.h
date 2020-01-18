@@ -13,6 +13,7 @@ class bookClubClient {
 
 public:
     bookClubClient(ConnectionHandler &connectionHandler_);
+    bookClubClient(const bookClubClient &aBookClubClient);
     void addBook(std::string bookName, std::string genre, bool sendFrame);
     void subscribe(std::string genre);
     void unsubscribe(std::string genre);
@@ -28,6 +29,7 @@ public:
     void getStatus(std::string genre);
     std::string getName();
     std::string getReceiptMessage(std::string receipt);
+    ConnectionHandler *getConnectionHandler() const ;
 
 private:
     std::map<std::string, std::vector<std::string>> myBooks;
