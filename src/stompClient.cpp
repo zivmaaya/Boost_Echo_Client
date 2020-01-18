@@ -161,8 +161,10 @@ void msgReceivedProcess(bookClubClient *clientHandler, ConnectionHandler *connec
                     clientHandler->isBookAvailable(getBookName(body,4,body.size()), genre);
                 } else if (body.at(0) == "Taking" && body.at(body.size()-1) == clientHandler->getName()) {
                     clientHandler->lendBook(getBookName(body,1,body.size()-2), genre);
-                } else if (body.at(1) == "has" && body.size() == 3) {
-                    clientHandler->borrowingBookFrom(body.at(0), genre, getBookName(body,2,body.size()));
+                } else if (body.at(1) == "has" ){
+                    if (!(body.size()>5 && body.at(2) == "added" && body.at(3) == "the" && body.at(4) == "book")) {
+                        clientHandler->borrowingBookFrom(body.at(0), genre, getBookName(body, 2, body.size()));
+                    }
                 } else if (body.at(0) == "Returning" && body.at(body.size()-1) == clientHandler->getName()) {
                     clientHandler->acceptBookILent(getBookName(body,1,body.size()-2), genre);
                 } else if (body.at(1) == "status") {
