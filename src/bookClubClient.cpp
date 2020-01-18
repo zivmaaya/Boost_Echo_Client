@@ -155,8 +155,8 @@ void bookClubClient::acceptBookILent(std::string bookName, std::string genre) {
 
 void bookClubClient::lendBook(std::string bookName, std::string genre) {
     std::vector<std::string> v = myBooks.find(genre)->second;
-    auto index = std::find(v.begin(),v.end(),bookName);
-    if(index != v.end()) {
+    auto index = std::find(myBooks.find(genre)->second.begin(),myBooks.find(genre)->second.end(),bookName);
+    if(index != myBooks.find(genre)->second.end()) {
         myBooks.find(genre)->second.erase(index);
         booksILent.push_back(bookName);
     }
