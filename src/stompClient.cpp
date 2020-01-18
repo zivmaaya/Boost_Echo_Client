@@ -165,7 +165,7 @@ void msgReceivedProcess(bookClubClient *clientHandler, ConnectionHandler *connec
                     clientHandler->borrowingBookFrom(body.at(0), genre, getBookName(body,2,body.size()));
                 } else if (body.at(0) == "Returning" && body.at(3) == clientHandler->getName()) {
                     clientHandler->acceptBookILent(getBookName(body,1,body.size()-2), genre);
-                } else if (body.at(0) == "Book" || body.at(0) == "book") {
+                } else if (body.at(1) == "status") {
                     clientHandler->sendStatus(genre);
                 }
             }
