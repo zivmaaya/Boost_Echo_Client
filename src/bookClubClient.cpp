@@ -5,10 +5,43 @@
 #include "../include/bookClubClient.h"
 #include <vector>
 
-bookClubClient::bookClubClient(ConnectionHandler &connectionHandler_) : connectionHandler(&connectionHandler_) {}
+bookClubClient::bookClubClient(ConnectionHandler &connectionHandler_) :
+myBooks(),
+booksIBorrowed(),
+booksILent(),
+subscribeId(),
+waitingList(),
+subscribeCounter(0),
+receipt(0),
+clientName(),
+clientPassword(),
+connectionHandler(&connectionHandler_),
+receiptTopic()
+{}
 
-bookClubClient::bookClubClient(const bookClubClient &aBookClubClient) {
+bookClubClient::bookClubClient(const bookClubClient &aBookClubClient) :
+        myBooks(),
+        booksIBorrowed(),
+        booksILent(),
+        subscribeId(),
+        waitingList(),
+        subscribeCounter(aBookClubClient.subscribeCounter),
+        receipt(aBookClubClient.receipt),
+        clientName(),
+        clientPassword(),
+        connectionHandler(aBookClubClient.getConnectionHandler()),
+        receiptTopic()
+        {}
+
+bookClubClient & bookClubClient::operator=(const bookClubClient &aBookClubClient)
+{
+
+    if (this == &aBookClubClient) {
+        return *this;
+    }
+    this->copy(aBookClubClient);
     this->connectionHandler = aBookClubClient.getConnectionHandler();
+    return *this;
 }
 
 void bookClubClient::addBook(std::string bookName, std::string genre, bool sendFrame) {
@@ -203,6 +236,19 @@ std::string bookClubClient::getReceiptMessage(std::string receipt) {
 
 ConnectionHandler *bookClubClient::getConnectionHandler()const {
     return this->connectionHandler;
+}
+
+void bookClubClient::copy(bookClubClient bcc) {
+    this->myBooks = bcc.myBooks;
+    this->booksIBorrowed = bcc.booksIBorrowed;
+    this->booksILent = bcc.booksILent;
+    this->subscribeId = bcc.subscribeId;
+    this->waitingList = bcc.waitingList;
+    this->subscribeCounter = bcc.subscribeCounter;
+    this->receipt = bcc.receipt;
+    this->clientName = bcc.clientName;
+    this->clientPassword = bcc.clientPassword;
+    this-> receiptTopic = bcc.receiptTopic;
 }
 
 

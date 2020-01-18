@@ -14,6 +14,7 @@ class bookClubClient {
 public:
     bookClubClient(ConnectionHandler &connectionHandler_);
     bookClubClient(const bookClubClient &aBookClubClient);
+    bookClubClient & operator=(const bookClubClient &aBookClubClient);
     void addBook(std::string bookName, std::string genre, bool sendFrame);
     void subscribe(std::string genre);
     void unsubscribe(std::string genre);
@@ -30,6 +31,7 @@ public:
     std::string getName();
     std::string getReceiptMessage(std::string receipt);
     ConnectionHandler *getConnectionHandler() const ;
+    void copy (bookClubClient bcc);
 
 private:
     std::map<std::string, std::vector<std::string>> myBooks;
@@ -37,8 +39,8 @@ private:
     std::vector<std::string> booksILent;
     std::map<std::string,int > subscribeId;
     std::vector<std::string> waitingList;
-    int subscribeCounter = 0;
-    int receipt = 0;
+    int subscribeCounter;
+    int receipt;
     std::string clientName;
     std::string clientPassword;
     ConnectionHandler *connectionHandler;

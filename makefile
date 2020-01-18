@@ -1,17 +1,24 @@
 CFLAGS:=-c -Wall -Weffc++ -g -std=c++11 -Iinclude
-LDFLAGS:=-lboost_system
+LDFLAGS:=-lboost_system -pthread
 
 all: EchoClient
-	g++ -o bin/echoExample bin/connectionHandler.o bin/echoClient.o $(LDFLAGS) 
+	g++ -o bin/stomp bin/connectionHandler.o bin/bookClubClient.o bin/stompClient.o $(LDFLAGS)
 
-EchoClient: bin/connectionHandler.o bin/echoClient.o
-	
+EchoClient: bin/bookClubClient.o bin/stompClient.o bin/connectionHandler.o
+
 bin/connectionHandler.o: src/connectionHandler.cpp
 	g++ $(CFLAGS) -o bin/connectionHandler.o src/connectionHandler.cpp
 
-bin/echoClient.o: src/echoClient.cpp
-	g++ $(CFLAGS) -o bin/echoClient.o src/echoClient.cpp
-	
+
+
+bin/bookClubClient.o: src/bookClubClient.cpp
+	g++ $(CFLAGS) -o bin/bookClubClient.o src/bookClubClient.cpp
+
+
+bin/stompClient.o: src/stompClient.cpp
+	g++ $(CFLAGS) -o bin/stompClient.o src/stompClient.cpp
+
+
 .PHONY: clean
 clean:
 	rm -f bin/*
