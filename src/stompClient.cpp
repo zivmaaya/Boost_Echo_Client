@@ -91,10 +91,12 @@ int main (int argc, char *argv[]) {
         return 1;
     }
     clientHandler.logIn(host, initString.at(2),initString.at(3));
-    std::thread th1(&UserHandler::run, &userHandler);
-    std::thread th2(&ServerHandler::run, &serverHandler);
-    th1.join();
-    th2.join();
+    if(connectionHandler.getConnectionStatus()){
+        std::thread th1(&UserHandler::run, &userHandler);
+        std::thread th2(&ServerHandler::run, &serverHandler);
+        th1.join();
+        th2.join();
+    }
 
     return 0;
 }
