@@ -6,6 +6,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <chrono>
 
 
 
@@ -31,6 +32,7 @@ public:
         std::vector<std::string> userInput;
         userInput.push_back("");
         while (_connectionHandler->getConnectionStatus()&& userInput.at(0)!="logout"){
+            std::this_thread::sleep_for(std::chrono::milliseconds(2));
             userInput = getUserInput();
             std::lock_guard<std::mutex> lock(_mutex);
             userInputProcess(userInput, clientHandler);
@@ -91,6 +93,8 @@ int main (int argc, char *argv[]) {
         return 1;
     }
     clientHandler.logIn(host, initString.at(2),initString.at(3));
+    std::vector<std::string> frame = connectionHandler.getStompframe();
+    msgReceivedProcess(&clientHandler, &connectionHandler, frame);
     if(connectionHandler.getConnectionStatus()){
         std::thread th1(&UserHandler::run, &userHandler);
         std::thread th2(&ServerHandler::run, &serverHandler);
