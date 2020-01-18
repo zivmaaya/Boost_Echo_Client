@@ -68,14 +68,14 @@ void bookClubClient::borrowBook(std::string bookName, std::string genre) {
 }
 
 void bookClubClient::borrowingBookFrom(std::string lender, std::string genre, std::string bookName) {
-    auto index = std::find(waitingList.begin(),waitingList.end(),bookName);
+    auto index = std::find(waitingList.begin(), waitingList.end(), bookName);
     std::vector<std::string> stompFrame;
-    if (index != waitingList.end()){
-        addBook(bookName,genre, false);
-        booksIBorrowed.insert({bookName,lender});
+    if (index != waitingList.end()) {
+        addBook(bookName, genre, false);
+        booksIBorrowed.insert({bookName, lender});
         waitingList.erase(index);
         stompFrame.push_back("SEND");
-        stompFrame.push_back("destination:"+genre);
+        stompFrame.push_back("destination:" + genre);
         stompFrame.push_back("");
         stompFrame.push_back("Taking " + bookName + " from " + lender);
         connectionHandler->sendStompFrame(stompFrame);
