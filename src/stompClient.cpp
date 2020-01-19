@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <connectionHandler.h>
 #include "../include/bookClubClient.h"
-#include <sstream>
 #include <iostream>
 #include <mutex>
 #include <thread>
@@ -109,7 +108,6 @@ int main (int argc, char *argv[]) {
 ///----------------------------------------------------------------------------------------
 
 std::vector<std::string> getUserInput(){
-    std::cout<<"enter your input: ";
     std::string userInput;
     getline(std::cin, userInput);
     std::string tmp;
@@ -155,50 +153,48 @@ void userInputProcess(std::vector<std::string> userInput,bookClubClient *clientH
 
 
 void msgReceivedProcess(bookClubClient *clientHandler, ConnectionHandler *connectionHandler,std::vector<std::string> stompMessage){
-//    if(connectionHandler->getConnectionStatus()){
-//        std::vector<std::string> stompMessage = connectionHandler->getStompframe();
-        if(stompMessage.at(0)=="MESSAGE"){
-            std::string genre = stompMessage.at(3).substr(12);
-            //-----print the message-----
-            std::cout<<genre<<":"<<stompMessage.at(5)<<std::endl;
-            std::vector<std::string> body = bodyString(stompMessage.at(5));
-            if (body.size() > 1) {
-                if (body.at(1) == "wish") {
-                    clientHandler->isBookAvailable(getBookName(body,4,body.size()), genre);
-                } else if (body.at(0) == "Taking" && body.at(body.size()-1) == clientHandler->getName()) {
-                    clientHandler->lendBook(getBookName(body,1,body.size()-2), genre);
-                } else if (body.at(1) == "has" ){
-                    if (!(body.size()>5 && body.at(2) == "added" && body.at(3) == "the" && body.at(4) == "book")) {
-                        clientHandler->borrowingBookFrom(body.at(0), genre, getBookName(body, 2, body.size()));
-                    }
-                } else if (body.at(0) == "Returning" && body.at(body.size()-1) == clientHandler->getName()) {
-                    clientHandler->acceptBookILent(getBookName(body,1,body.size()-2), genre);
-                } else if (body.at(1) == "status") {
-                    clientHandler->sendStatus(genre);
+    if(stompMessage.at(0)=="MESSAGE"){
+        std::string genre = stompMessage.at(3).substr(12);
+        //-----print the message-----
+        std::cout<<genre<<":"<<stompMessage.at(5)<<std::endl;
+        std::vector<std::string> body = bodyString(stompMessage.at(5));
+        if (body.size() > 1) {
+            if (body.at(1) == "wish") {
+                clientHandler->isBookAvailable(getBookName(body,4,body.size()), genre);
+            } else if (body.at(0) == "Taking" && body.at(body.size()-1) == clientHandler->getName()) {
+                clientHandler->lendBook(getBookName(body,1,body.size()-2), genre);
+            } else if (body.at(1) == "has" ){
+                if (!(body.size()>5 && body.at(2) == "added" && body.at(3) == "the" && body.at(4) == "book")) {
+                    clientHandler->borrowingBookFrom(body.at(0), genre, getBookName(body, 2, body.size()));
                 }
+            } else if (body.at(0) == "Returning" && body.at(body.size()-1) == clientHandler->getName()) {
+                clientHandler->acceptBookILent(getBookName(body,1,body.size()-2), genre);
+            } else if (body.at(1) == "status") {
+                clientHandler->sendStatus(genre);
             }
-        }
-        else if(stompMessage.at(0)=="CONNECTED"){
-            std::cout<<"Login successful"<<std::endl;
-        }
-        else if(stompMessage.at(0)=="RECEIPT"){
-            std::string receiptId = stompMessage.at(1).substr(11);
-            std::string receiptMessage = clientHandler->getReceiptMessage(receiptId);
-            if (receiptMessage == "disconnect") {
-                connectionHandler->close();
-            }
-            else {
-                std::cout<<receiptMessage<<std::endl;
-            }
-        }
-        else if (stompMessage.at(0)=="ERROR"){
-            std::cout<<stompMessage.at(1).substr(9)<<std::endl;
-            connectionHandler->close();
-        }
-        else{
-            std::cout<<"unValid frame received"<<std::endl;
         }
     }
+    else if(stompMessage.at(0)=="CONNECTED"){
+        std::cout<<"Login successful"<<std::endl;
+    }
+    else if(stompMessage.at(0)=="RECEIPT"){
+        std::string receiptId = stompMessage.at(1).substr(11);
+        std::string receiptMessage = clientHandler->getReceiptMessage(receiptId);
+        if (receiptMessage == "disconnect") {
+            connectionHandler->close();
+        }
+        else {
+            std::cout<<receiptMessage<<std::endl;
+        }
+    }
+    else if (stompMessage.at(0)=="ERROR"){
+        std::cout<<stompMessage.at(1).substr(9)<<std::endl;
+        connectionHandler->close();
+    }
+    else{
+        std::cout<<"unValid frame received"<<std::endl;
+    }
+}
 
 
 

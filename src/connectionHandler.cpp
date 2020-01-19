@@ -41,19 +41,11 @@ std::vector<std::string> ConnectionHandler::getStompframe() {
         stopmFrame.push_back(newLine);
         newLine="";
     }while (stopmFrame.at(stopmFrame.size()-1)!="^@");
-//    for(std::string s :stopmFrame){
-//        std::cout<<s<<std::endl;
-//    }
-    std::cout<<std::endl;
     return stopmFrame;
 }
 
 void ConnectionHandler::sendStompFrame(std::vector<std::string> userInput){
     userInput.push_back("^@");
-//    for(std::string s :userInput){
-//        std::cout<<s<<std::endl;
-//    }
-//    std::cout<<std::endl;
     for(string s :userInput){
         sendLine(s);
     }
